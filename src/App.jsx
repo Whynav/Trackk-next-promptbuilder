@@ -319,7 +319,7 @@ export default function App() {
     navigator.clipboard.writeText(currentPrompt);
     saveHistory(currentPrompt);
     window.open('https://trackk.in/', '_blank');
-    showToast('Prompt copied! Opening Trackk Nest...');
+    showToast('Prompt copied! Opening Trackk Next...');
   };
 
   const resetBuilder = () => {
@@ -375,7 +375,7 @@ export default function App() {
           <button onClick={handleOpenTrackk}
             className={`neo-btn ${mobile ? 'flex-1' : 'w-full'} py-2.5 bg-[#FB923C] border-[3px] border-black rounded-lg font-label text-xs font-bold shadow-neo flex items-center justify-center gap-2 text-black`}>
             <Icon name="open_in_new" size={16} />
-            {mobile ? 'Open Trackk Nest' : 'Copy & Open Trackk Nest'}
+            {mobile ? 'Open Trackk Next' : 'Copy & Open Trackk Next'}
           </button>
           {mobile && (
             <button onClick={handleCopy}
@@ -441,7 +441,7 @@ export default function App() {
               TRACKK
             </h1>
             <span className="font-headline text-sm font-bold text-[#4b4734] hidden md:block mt-0.5">
-              Nest Prompt Builder
+              Next Prompt Builder
             </span>
           </div>
         </div>
@@ -688,7 +688,7 @@ export default function App() {
                       <button onClick={() => { navigator.clipboard.writeText(item.prompt); window.open('https://trackk.in/', '_blank'); }}
                         className={`neo-btn flex-[2] py-2 ${CARD_ACCENTS[item.color] || 'bg-[#FB923C]'} border-[2px] border-black rounded-lg font-label text-xs font-bold shadow-neo-sm flex items-center justify-center gap-1.5 text-black`}>
                         <Icon name="open_in_new" size={14} />
-                        Use on Trackk Nest
+                        Use on Trackk Next
                       </button>
                     </div>
                   </div>
