@@ -2,27 +2,82 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Base ──────────────────────────────────────────────────────────── */
+/* Fonts loaded via index.html link tags (Bricolage Grotesque, Hanken Grotesk, Space Mono, Material Symbols) */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Hanken Grotesk', sans-serif;
+  background-color: #FEFCE8;
+  background-image: radial-gradient(#cec6ad 1px, transparent 1px);
+  background-size: 20px 20px;
+  color: #000000;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.backdrop-blur-xl {
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+/* ── Material Symbols config ───────────────────────────────────────── */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+  user-select: none;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
 }
 
-/* Custom elegant scrollbar styling */
+/* ── Neo-Chip interaction (Stitch press-lift effect) ───────────────── */
+.neo-chip {
+  transition: transform 0.08s ease-in-out, box-shadow 0.08s ease-in-out;
+}
+
+.neo-chip:hover:not(:disabled) {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px #000000;
+}
+
+.neo-chip:active:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: 0px 0px 0px 0px #000000;
+}
+
+/* ── CTA button press effect ───────────────────────────────────────── */
+.neo-btn {
+  transition: transform 0.08s ease-in-out, box-shadow 0.08s ease-in-out;
+}
+
+.neo-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px #000000;
+}
+
+.neo-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px 0px #000000;
+}
+
+/* ── Scrollbar (minimal) ───────────────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0B0E14;
+  background: #FEFCE8;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1E293B;
-  border-radius: 9999px;
+  background: #000000;
+  border-radius: 0;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+
+/* ── Selection ─────────────────────────────────────────────────────── */
+::selection {
+  background-color: #FB923C;
+  color: #000000;
+}
+
+/* ── Smooth scroll ─────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
 }

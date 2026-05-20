@@ -7,19 +7,40 @@ export default {
   theme: {
     extend: {
       colors: {
-        emerald: {
-          50: '#ecfdf5',
-          100: '#d1fae5',
-          200: '#a7f3d0',
-          300: '#6ee7b7',
-          400: '#34d399',
-          500: '#10b981',
-          600: '#059669',
-          700: '#047857',
-          800: '#065f46',
-          900: '#064e3b',
-        }
-      }
+        /* ── Stitch Gen-Z Neo-Brutalist Palette ── */
+        'butter-cream':   '#FEFCE8',
+        'punchy-orange':  '#FB923C',
+        'pure-black':     '#000000',
+        'pure-white':     '#FFFFFF',
+        'soft-lavender':  '#DDD6FE',
+        'primary-yellow': '#fde047',
+        'primary-fixed':  '#ffe24c',
+        'surface-bright': '#f9f9f9',
+        'surface-container': '#eeeeee',
+        'surface-container-low': '#f3f3f3',
+        'surface-dim':    '#dadada',
+        'inverse-surface':'#303030',
+        'on-surface':     '#1b1b1b',
+        'on-surface-variant': '#4b4734',
+        'outline':        '#7d7761',
+        'outline-variant':'#cec6ad',
+        'stitch-error':   '#ba1a1a',
+        'stitch-error-container': '#ffdad6',
+        'tertiary-container': '#e3dcff',
+        'secondary-container': '#fd933d',
+      },
+      fontFamily: {
+        'headline': ['"Bricolage Grotesque"', 'sans-serif'],
+        'body':     ['"Hanken Grotesk"', 'sans-serif'],
+        'label':    ['"Space Mono"', 'monospace'],
+      },
+      boxShadow: {
+        'neo':       '4px 4px 0px 0px #000000',
+        'neo-sm':    '2px 2px 0px 0px #000000',
+        'neo-lg':    '8px 8px 0px 0px #000000',
+        'neo-orange':'4px 4px 0px 0px #FB923C',
+        'neo-inset': 'inset 2px 2px 0px 0px #000000',
+      },
     },
   },
   plugins: [],

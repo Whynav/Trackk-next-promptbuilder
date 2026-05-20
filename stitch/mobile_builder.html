@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Trackk Nest Prompt Builder</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&amp;family=Hanken+Grotesk:wght@400;500;700&amp;family=Space+Mono:wght@700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#e3dcff",
+                        "on-primary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#f1f1f1",
+                        "surface-variant": "#e2e2e2",
+                        "primary-fixed-dim": "#e2c62d",
+                        "inverse-surface": "#303030",
+                        "secondary": "#944a00",
+                        "secondary-container": "#fd933d",
+                        "on-secondary-container": "#693300",
+                        "surface-container": "#eeeeee",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#301400",
+                        "surface-dim": "#dadada",
+                        "pure-black": "#000000",
+                        "primary": "#6d5e00",
+                        "surface-bright": "#f9f9f9",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f3f3f3",
+                        "on-primary-fixed": "#211b00",
+                        "inverse-primary": "#e2c62d",
+                        "secondary-fixed-dim": "#ffb783",
+                        "outline-variant": "#cec6ad",
+                        "on-tertiary-container": "#645f81",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-surface": "#1b1b1b",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#6d5e00",
+                        "tertiary": "#5f5a7c",
+                        "surface-container-high": "#e8e8e8",
+                        "on-background": "#1b1b1b",
+                        "surface": "#f9f9f9",
+                        "on-primary-container": "#726300",
+                        "secondary-fixed": "#ffdcc5",
+                        "pure-white": "#FFFFFF",
+                        "punchy-orange": "#FB923C",
+                        "butter-cream": "#FEFCE8",
+                        "primary-fixed": "#ffe24c",
+                        "on-primary-fixed-variant": "#524600",
+                        "primary-container": "#fde047",
+                        "on-secondary-fixed-variant": "#713700",
+                        "on-tertiary-fixed-variant": "#474363",
+                        "on-surface-variant": "#4b4734",
+                        "background": "#f9f9f9",
+                        "tertiary-fixed-dim": "#c8c2e9",
+                        "on-tertiary-fixed": "#1b1735",
+                        "outline": "#7d7761",
+                        "tertiary-fixed": "#e5deff",
+                        "surface-container-highest": "#e2e2e2",
+                        "soft-lavender": "#DDD6FE"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-md": "24px",
+                        "margin-desktop": "40px",
+                        "stack-sm": "12px",
+                        "gutter": "16px",
+                        "margin-mobile": "20px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Space Mono"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Bricolage Grotesque"],
+                        "headline-lg": ["Bricolage Grotesque"],
+                        "chat-bubble": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-xl": ["Bricolage Grotesque"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", { "lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.5", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "chat-bubble": ["16px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-xl": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #FEFCE8; /* butter-cream */
+        }
+        .neo-shadow {
+            box-shadow: 4px 4px 0px 0px #000000;
+        }
+        .neo-shadow-sm {
+            box-shadow: 2px 2px 0px 0px #000000;
+        }
+        .neo-shadow-lg {
+            box-shadow: 8px 8px 0px 0px #000000;
+        }
+        .neo-border {
+            border: 3px solid #000000;
+        }
+        .neo-border-sm {
+            border: 2px solid #000000;
+        }
+        /* Hide scrollbar for horizontal scrolling containers */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-surface pb-[120px]">
+<!-- Top App Bar -->
+<header class="w-full sticky top-0 z-50 border-b-4 border-pure-black bg-butter-cream shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex justify-between items-center px-margin-mobile py-stack-sm">
+<div class="flex items-center gap-4">
+<button class="text-primary hover:bg-primary-container transition-colors active:translate-x-1 active:translate-y-1 active:shadow-none p-1 border-2 border-transparent hover:border-pure-black rounded-lg">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile italic text-pure-black uppercase">TRACKK</h1>
+</div>
+<div class="flex gap-2">
+<button class="font-label-caps text-label-caps bg-soft-lavender neo-border-sm rounded-lg px-3 py-2 neo-shadow-sm active:translate-x-1 active:translate-y-1 active:shadow-none flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="magic_button">magic_button</span> Surprise
+            </button>
+</div>
+</header>
+<main class="p-margin-mobile flex flex-col gap-stack-md">
+<!-- Header Section -->
+<section class="mb-4">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-pure-black mb-2">Prompt Builder</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Construct your perfect discovery query.</p>
+</section>
+<!-- 1. Discovery Goal -->
+<section class="bg-pure-white neo-border rounded-xl p-4 neo-shadow relative overflow-hidden">
+<div class="absolute -right-4 -top-4 text-punchy-orange opacity-20 transform rotate-12">
+<span class="material-symbols-outlined text-[100px]" data-icon="explore">explore</span>
+</div>
+<div class="flex items-center gap-2 mb-4 relative z-10">
+<span class="bg-pure-black text-pure-white font-label-caps text-label-caps w-6 h-6 flex items-center justify-center rounded-full">1</span>
+<h3 class="font-headline-lg-mobile text-[20px] font-bold text-pure-black">What are you trying to find?</h3>
+</div>
+<div class="flex flex-wrap gap-2 relative z-10">
+<button class="bg-primary-container neo-border-sm rounded-lg px-3 py-2 font-body-md text-body-md neo-shadow-sm active:translate-x-1 active:translate-y-1 active:shadow-none flex items-center gap-1 hover:bg-punchy-orange transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="trending_up">trending_up</span> Fast Movers
+                </button>
+<button class="bg-pure-white neo-border-sm rounded-lg px-3 py-2 font-body-md text-body-md hover:bg-primary-container transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="rocket_launch">rocket_launch</span> Breakout Candidates
+                </button>
+<button class="bg-pure-white neo-border-sm rounded-lg px-3 py-2 font-body-md text-body-md hover:bg-primary-container transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="schedule">schedule</span> Long-Term Quality
+                </button>
+<button class="bg-pure-white neo-border-sm rounded-lg px-3 py-2 font-body-md text-body-md hover:bg-primary-container transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="price_check">price_check</span> Undervalued Stocks
+                </button>
+<button class="bg-soft-lavender neo-border-sm rounded-lg px-3 py-2 font-body-md text-body-md neo-shadow-sm active:translate-x-1 active:translate-y-1 active:shadow-none flex items-center gap-1 transform rotate-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="build">build</span> Custom / Build Own
+                </button>
+</div>
+</section>
+<!-- 2 & 3. Timeframe & Risk -->
+<div class="grid grid-cols-2 gap-4">
+<section class="bg-pure-white neo-border rounded-xl p-4 neo-shadow-sm">
+<div class="flex items-center gap-2 mb-3">
+<span class="bg-pure-black text-pure-white font-label-caps text-label-caps w-6 h-6 flex items-center justify-center rounded-full">2</span>
+<h3 class="font-headline-lg-mobile text-[16px] font-bold text-pure-black">Timeframe</h3>
+</div>
+<div class="relative">
+<select class="w-full appearance-none bg-butter-cream neo-border-sm rounded-lg py-2 pl-3 pr-8 font-body-md text-body-md focus:outline-none focus:border-punchy-orange focus:ring-0">
+<option>Medium Term</option>
+<option>Short Term</option>
+<option>Long Term</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+</section>
+<section class="bg-pure-white neo-border rounded-xl p-4 neo-shadow-sm">
+<div class="flex items-center gap-2 mb-3">
+<span class="bg-pure-black text-pure-white font-label-caps text-label-caps w-6 h-6 flex items-center justify-center rounded-full">3</span>
+<h3 class="font-headline-lg-mobile text-[16px] font-bold text-pure-black">Risk</h3>
+</div>
+<div class="relative">
+<select class="w-full appearance-none bg-butter-cream neo-border-sm rounded-lg py-2 pl-3 pr-8 font-body-md text-body-md focus:outline-none focus:border-punchy-orange focus:ring-0">
+<option>Balanced</option>
+<option>Aggressive</option>
+<option>Safer</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+</section>
+</div>
+<!-- 4. Filter Universe -->
+<section class="bg-tertiary-container neo-border rounded-xl p-4 neo-shadow">
+<div class="flex items-center gap-2 mb-4">
+<span class="bg-pure-black text-pure-white font-label-caps text-label-caps w-6 h-6 flex items-center justify-center rounded-full">4</span>
+<h3 class="font-headline-lg-mobile text-[20px] font-bold text-pure-black">Filter Universe</h3>
+<span class="font-label-caps text-label-caps text-on-tertiary-container ml-auto">Optional</span>
+</div>
+<div class="flex flex-col gap-3">
+<div>
+<label class="font-label-caps text-label-caps text-pure-black mb-1 block">Market Cap</label>
+<div class="relative">
+<select class="w-full appearance-none bg-pure-white neo-border-sm rounded-lg py-2 pl-3 pr-8 font-body-md text-body-md focus:outline-none focus:border-punchy-orange">
+<option>Any Cap</option>
+<option>Large Cap</option>
+<option>Mid Cap</option>
+<option>Small Cap</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<div>
+<label class="font-label-caps text-label-caps text-pure-black mb-1 block">Sector</label>
+<div class="relative">
+<select class="w-full appearance-none bg-pure-white neo-border-sm rounded-lg py-2 pl-3 pr-8 font-body-md text-body-md focus:outline-none focus:border-punchy-orange">
+<option>Any Sector</option>
+<option>Technology</option>
+<option>Finance</option>
+<option>Healthcare</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. Conditions & Signals -->
+<section class="bg-pure-white neo-border rounded-xl p-4 neo-shadow">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="bg-pure-black text-pure-white font-label-caps text-label-caps w-6 h-6 flex items-center justify-center rounded-full">5</span>
+<h3 class="font-headline-lg-mobile text-[20px] font-bold text-pure-black">Conditions</h3>
+</div>
+<span class="bg-punchy-orange neo-border-sm rounded-full px-2 py-1 font-label-caps text-label-caps text-pure-black">0 / 4 Selected</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 text-sm">Select up to 4 specific conditions.</p>
+<!-- Category: Price Action -->
+<div class="mb-4 border-l-4 border-punchy-orange pl-3">
+<h4 class="font-headline-lg-mobile text-[16px] font-bold text-pure-black flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined" data-icon="show_chart">show_chart</span> Price Action &amp; Momentum
+                </h4>
+<div class="flex flex-wrap gap-2">
+<button class="bg-butter-cream neo-border-sm rounded-lg px-2 py-1 font-body-md text-[14px] hover:bg-primary-container transition-colors">strong recent price performance</button>
+<button class="bg-butter-cream neo-border-sm rounded-lg px-2 py-1 font-body-md text-[14px] hover:bg-primary-container transition-colors">near 52-week highs</button>
+<button class="bg-butter-cream neo-border-sm rounded-lg px-2 py-1 font-body-md text-[14px] hover:bg-primary-container transition-colors">breakout potential</button>
+</div>
+</div>
+<!-- Category: Fundamentals -->
+<div class="border-l-4 border-soft-lavender pl-3">
+<h4 class="font-headline-lg-mobile text-[16px] font-bold text-pure-black flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span> Fundamental Strength
+                </h4>
+<div class="flex flex-wrap gap-2">
+<button class="bg-butter-cream neo-border-sm rounded-lg px-2 py-1 font-body-md text-[14px] hover:bg-primary-container transition-colors">strong revenue growth</button>
+<button class="bg-butter-cream neo-border-sm rounded-lg px-2 py-1 font-body-md text-[14px] hover:bg-primary-container transition-colors">high ROE / ROCE</button>
+<button class="bg-butter-cream neo-border-sm rounded-lg px-2 py-1 font-body-md text-[14px] hover:bg-primary-container transition-colors">low debt</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Floating Sticky Prompt Preview -->
+<div class="fixed bottom-0 w-full z-40 bg-pure-black text-pure-white p-4 border-t-4 border-punchy-orange rounded-t-xl shadow-[0px_-8px_0px_0px_rgba(0,0,0,0.1)]">
+<div class="flex items-center gap-2 mb-2 text-punchy-orange">
+<span class="material-symbols-outlined text-[18px]" data-icon="edit_note">edit_note</span>
+<span class="font-label-caps text-label-caps tracking-widest">GENERATED PROMPT</span>
+</div>
+<div class="bg-inverse-surface border-2 border-outline rounded-lg p-3 min-h-[80px]">
+<p class="font-body-md text-body-md text-surface-dim italic">Select a discovery goal or tap 'Surprise Me' to start building your prompt...</p>
+</div>
+</div>
+</body></html>

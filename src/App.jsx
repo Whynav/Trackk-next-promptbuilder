@@ -1,12 +1,16 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import {
-  TrendingUp, Zap, ShieldCheck, Tag, Coins, Layers, Newspaper, Activity,
-  LifeBuoy, SlidersHorizontal, Compass, Building2, Scale, Anchor, Megaphone,
-  Sparkles, Copy, Send, RotateCcw, Check, ChevronDown, Wand2, Search,
-  X, Info, Gauge
-} from 'lucide-react';
+import React, { useState, useMemo } from 'react';
 
-// Global Utility Helpers
+// ─── Material Symbol Icon helper ──────────────────────────────────────────────
+const Icon = ({ name, size = 20, className = '' }) => (
+  <span
+    className={`material-symbols-outlined ${className}`}
+    style={{ fontSize: `${size}px` }}
+  >
+    {name}
+  </span>
+);
+
+// ─── Utility ──────────────────────────────────────────────────────────────────
 const joinList = (arr, connector = 'and') => {
   if (!arr || arr.length === 0) return '';
   if (arr.length === 1) return arr[0];
@@ -14,244 +18,220 @@ const joinList = (arr, connector = 'and') => {
   return `${arr.slice(0, -1).join(', ')}, ${connector} ${arr[arr.length - 1]}`;
 };
 
+// ─── Data ─────────────────────────────────────────────────────────────────────
 const GOALS = [
-  { id: 'fast_moving', label: 'Fast Movers', icon: TrendingUp },
-  { id: 'breakout', label: 'Breakout Candidates', icon: Zap },
-  { id: 'long_term', label: 'Long-Term Quality', icon: ShieldCheck },
-  { id: 'undervalued', label: 'Undervalued Stocks', icon: Tag },
-  { id: 'affordable', label: 'Affordable (Under ₹500)', icon: Coins },
-  { id: 'sector', label: 'Sector Tailwinds', icon: Layers },
-  { id: 'event', label: 'News & Catalysts', icon: Newspaper },
-  { id: 'active', label: 'High Trading Volume', icon: Activity },
-  { id: 'safer', label: 'Low Volatility / Safe', icon: LifeBuoy },
-  { id: 'custom', label: 'Custom / Build Own', icon: SlidersHorizontal },
+  { id: 'fast_moving', label: 'Fast Movers',           icon: 'trending_up' },
+  { id: 'breakout',    label: 'Breakout Candidates',   icon: 'bolt' },
+  { id: 'long_term',   label: 'Long-Term Quality',     icon: 'verified' },
+  { id: 'undervalued', label: 'Undervalued Stocks',    icon: 'sell' },
+  { id: 'affordable',  label: 'Affordable (Under ₹500)', icon: 'account_balance_wallet' },
+  { id: 'sector',      label: 'Sector Tailwinds',      icon: 'wind_power' },
+  { id: 'event',       label: 'News & Catalysts',      icon: 'newspaper' },
+  { id: 'active',      label: 'High Trading Volume',   icon: 'monitoring' },
+  { id: 'safer',       label: 'Low Volatility / Safe', icon: 'shield' },
+  { id: 'custom',      label: 'Custom / Build Own',    icon: 'tune', dashed: true },
 ];
 
 const HORIZONS = [
-  { id: 'intraday', label: 'Intraday' },
-  { id: 'swing', label: 'Swing' },
-  { id: 'medium', label: 'Medium Term' },
-  { id: 'long', label: 'Long Term' },
+  { id: 'intraday',  label: 'Intraday' },
+  { id: 'swing',     label: 'Swing' },
+  { id: 'medium',    label: 'Medium Term' },
+  { id: 'long',      label: 'Long Term' },
   { id: 'exploring', label: 'Diversified Portfolio' },
 ];
 
 const UNIVERSES = {
-  sectors: ['Any Sector', 'Banking & Finance', 'Energy', 'EV & Auto', 'Pharma', 'IT & Tech', 'Infrastructure', 'Defense',
-  'Consumer Goods', 'PSU'],
-  marketCaps: ['Any Cap', 'Large Cap', 'Mid Cap', 'Small Cap'],
-  priceRanges: ['Any Price', 'Under ₹100', 'Under ₹500', '₹500 - ₹1000', 'Over ₹1000']
+  sectors:     ['Any Sector', 'Banking & Finance', 'Energy', 'EV & Auto', 'Pharma', 'IT & Tech', 'Infrastructure', 'Defense', 'Consumer Goods', 'PSU'],
+  marketCaps:  ['Any Cap', 'Large Cap', 'Mid Cap', 'Small Cap'],
+  priceRanges: ['Any Price', 'Under ₹100', 'Under ₹500', '₹500 - ₹1000', 'Over ₹1000'],
 };
 
 const SIGNAL_FAMILIES = [
   {
-    id: 'momentum',
-    title: 'Price Action & Momentum',
-    icon: TrendingUp,
-    options: ['strong recent price performance', 'near 52-week highs', 'sustained momentum', 'short-term uptrend', 'breakout potential']
+    id: 'momentum', title: 'Price Action & Momentum', icon: 'show_chart',
+    options: ['strong recent price performance', 'near 52-week highs', 'sustained momentum', 'short-term uptrend', 'breakout potential'],
   },
   {
-    id: 'volume',
-    title: 'Volume & Activity',
-    icon: Activity,
-    options: ['high trading volume', 'sudden volume spike', 'unusual activity', 'liquid stocks', 'high trader interest']
+    id: 'volume', title: 'Volume & Activity', icon: 'bar_chart',
+    options: ['high trading volume', 'sudden volume spike', 'unusual activity', 'liquid stocks', 'high trader interest'],
   },
   {
-    id: 'technical',
-    title: 'Technical Indicators',
-    icon: Compass,
-    options: ['RSI strength', 'RSI oversold', 'above key moving averages', 'bullish trend alignment', 'volatility expansion']
+    id: 'technical', title: 'Technical Indicators', icon: 'query_stats',
+    options: ['RSI strength', 'RSI oversold', 'above key moving averages', 'bullish trend alignment', 'volatility expansion'],
   },
   {
-    id: 'fundamental',
-    title: 'Fundamental Strength',
-    icon: Building2,
-    options: ['strong revenue growth', 'strong profit growth', 'high ROE / ROCE', 'low debt', 'healthy margins', 'positive cash flow', 'consistent earnings']
+    id: 'fundamental', title: 'Fundamental Strength', icon: 'account_balance',
+    options: ['strong revenue growth', 'strong profit growth', 'high ROE / ROCE', 'low debt', 'healthy margins', 'positive cash flow', 'consistent earnings'],
   },
   {
-    id: 'valuation',
-    title: 'Valuation',
-    icon: Scale,
-    options: ['low PE relative to peers', 'reasonable valuation', 'undervalued with strong business quality', 'fair price with growth']
+    id: 'valuation', title: 'Valuation', icon: 'balance',
+    options: ['low PE relative to peers', 'reasonable valuation', 'undervalued with strong business quality', 'fair price with growth'],
   },
   {
-    id: 'safety',
-    title: 'Stability & Safety',
-    icon: Anchor,
-    options: ['lower volatility', 'stable earnings', 'strong balance sheet', 'defensive businesses']
+    id: 'safety', title: 'Stability & Safety', icon: 'anchor',
+    options: ['lower volatility', 'stable earnings', 'strong balance sheet', 'defensive businesses'],
   },
   {
-    id: 'event',
-    title: 'Event & Catalyst Sensitivity',
-    icon: Megaphone,
-    options: ['stocks that react strongly to news', 'earnings-sensitive stocks', 'policy-sensitive stocks', 'announcement-driven movers', 'catalyst-led setups']
-  }
+    id: 'event', title: 'Event & Catalyst Sensitivity', icon: 'campaign',
+    options: ['stocks that react strongly to news', 'earnings-sensitive stocks', 'policy-sensitive stocks', 'announcement-driven movers', 'catalyst-led setups'],
+  },
 ];
 
 const EXCLUSIONS = [
-  'avoid penny stocks', 'avoid loss-making companies', 'avoid highly volatile stocks', 'prefer profitable companies',
-  'prefer liquid stocks only'
+  'avoid penny stocks',
+  'avoid loss-making companies',
+  'avoid highly volatile stocks',
+  'prefer profitable companies',
+  'prefer liquid stocks only',
 ];
 
 const RISKS = ['Aggressive', 'Balanced', 'Safer'];
 
 const PROMPT_LIBRARY = [
-  { category: 'Momentum', title: 'High Volume Movers', prompt: 'Find mid and small-cap stocks under ₹1000 showing strong upward momentum, with strong recent price performance and sudden volume spikes, for a swing trade. Avoid penny stocks.', why: 'Great for catching stocks that are already in motion with institutional backing.', tags: ['Swing', 'Volume'] },
-  { category: 'Momentum', title: '52-Week High Chasers', prompt: 'Find stocks near their 52-week highs, showing sustained momentum and high trader interest, for a swing trade.', why: 'Perfect for trend followers looking for names breaking into new territory.', tags: ['Swing', 'Price Action'] },
-  { category: 'Breakouts', title: 'Technical Squeeze', prompt: 'Find stocks setting up for a breakout, showing volatility expansion and breakout potential, for a swing trade.', why: 'Finds tightly coiled charts right before they make a major directional move.', tags: ['Technical', 'Swing'] },
-  { category: 'Long-term', title: 'The Compounder', prompt: 'Find large and mid-cap stocks with solid fundamentals, showing strong profit growth and high ROE / ROCE, for a long-term investment.', why: 'The gold standard for finding mature, high-quality businesses to hold.', tags: ['Long Term', 'Fundamental'] },
-  { category: 'Undervalued', title: 'Beaten Down Quality', prompt: 'Find stocks that look undervalued, showing stable earnings and low PE relative to peers, for a medium-term position.', why: 'Good for finding unloved stocks that still have a solid underlying business.', tags: ['Value', 'Medium Term'] },
-  { category: 'Affordable', title: 'Under ₹100 Momentum', prompt: 'Find stocks priced under ₹100 with strong momentum, showing high trading volume and strong recent price performance. Avoid loss-making companies.', why: 'Filters out absolute junk while finding cheaper stocks that are actually moving.', tags: ['Budget', 'Momentum'] },
-  { category: 'Event-driven', title: 'Earnings Movers', prompt: 'Find tech and pharma stocks reacting to recent catalysts, showing earnings-sensitive stocks and high trading volume, for a swing trade.', why: 'Built to catch the volatility immediately surrounding corporate earnings.', tags: ['News', 'Swing'] },
-  { category: 'Thematic', title: 'EV & Auto Boom', prompt: 'Find EV & Auto stocks with strong sector tailwinds, showing strong revenue growth and bullish trend alignment, for a swing trade.', why: 'Combines a top-down thematic view with actual fundamental growth numbers.', tags: ['Sector', 'Growth'] },
-  { category: 'Safer', title: 'Defensive Yielders', prompt: 'Find large-cap stocks with a defensive profile, showing lower volatility and strong balance sheet, for a long-term investment.', why: 'Prioritizes capital protection and low-stress holding over aggressive growth.', tags: ['Safe', 'Long Term'] },
-  { category: 'Hybrid', title: 'Techno-Funda Setup', prompt: 'Find stocks showing strong profit growth, low debt, breakout potential, and RSI strength, for a swing trade.', why: 'The best of both worlds: strong underlying business meeting a great chart setup.', tags: ['Funda', 'Tech'] }
+  { category: 'Momentum',    title: 'High Volume Movers',    color: 'orange',   tags: ['Swing', 'Volume'],       why: 'Great for catching stocks already in motion with institutional backing.',        prompt: 'Find mid and small-cap stocks under ₹1000 showing strong upward momentum, with strong recent price performance and sudden volume spikes, for a swing trade. Avoid penny stocks.' },
+  { category: 'Momentum',    title: '52-Week High Chasers',  color: 'yellow',   tags: ['Swing', 'Price Action'],  why: 'Perfect for trend followers looking for names breaking into new territory.',     prompt: 'Find stocks near their 52-week highs, showing sustained momentum and high trader interest, for a swing trade.' },
+  { category: 'Breakouts',   title: 'Technical Squeeze',     color: 'lavender', tags: ['Technical', 'Swing'],     why: 'Finds tightly coiled charts right before they make a major directional move.',  prompt: 'Find stocks setting up for a breakout, showing volatility expansion and breakout potential, for a swing trade.' },
+  { category: 'Long-term',   title: 'The Compounder',        color: 'yellow',   tags: ['Long Term', 'Fundamental'], why: 'The gold standard for finding mature, high-quality businesses to hold.',       prompt: 'Find large and mid-cap stocks with solid fundamentals, showing strong profit growth and high ROE / ROCE, for a long-term investment.' },
+  { category: 'Undervalued', title: 'Beaten Down Quality',   color: 'lavender', tags: ['Value', 'Medium Term'],   why: 'Good for finding unloved stocks that still have a solid underlying business.',   prompt: 'Find stocks that look undervalued, showing stable earnings and low PE relative to peers, for a medium-term position.' },
+  { category: 'Affordable',  title: 'Under ₹100 Momentum',  color: 'orange',   tags: ['Budget', 'Momentum'],     why: 'Filters out junk while finding cheaper stocks that are actually moving.',        prompt: 'Find stocks priced under ₹100 with strong momentum, showing high trading volume and strong recent price performance. Avoid loss-making companies.' },
+  { category: 'Event',       title: 'Earnings Movers',       color: 'yellow',   tags: ['News', 'Swing'],          why: 'Built to catch the volatility immediately surrounding corporate earnings.',      prompt: 'Find tech and pharma stocks reacting to recent catalysts, showing earnings-sensitive stocks and high trading volume, for a swing trade.' },
+  { category: 'Thematic',    title: 'EV & Auto Boom',        color: 'lavender', tags: ['Sector', 'Growth'],       why: 'Combines a top-down thematic view with actual fundamental growth numbers.',     prompt: 'Find EV & Auto stocks with strong sector tailwinds, showing strong revenue growth and bullish trend alignment, for a swing trade.' },
+  { category: 'Safer',       title: 'Defensive Yielders',    color: 'yellow',   tags: ['Safe', 'Long Term'],      why: 'Prioritizes capital protection and low-stress holding over aggressive growth.',  prompt: 'Find large-cap stocks with a defensive profile, showing lower volatility and strong balance sheet, for a long-term investment.' },
+  { category: 'Hybrid',      title: 'Techno-Funda Setup',    color: 'orange',   tags: ['Funda', 'Tech'],          why: 'The best of both worlds: strong underlying business meeting a great chart setup.', prompt: 'Find stocks showing strong profit growth, low debt, breakout potential, and RSI strength, for a swing trade.' },
 ];
 
-const Badge = ({ children, active, onClick, icon: Icon, isSecondary }) => (
-  <button onClick={onClick} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold
-    transition-all duration-200 border ${ active
-    ? 'bg-emerald-500/15 border-emerald-500 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)] ring-1 ring-emerald-500/50'
-    : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200 hover:bg-slate-800/50' }
-    ${isSecondary ? 'opacity-90 scale-95' : '' }`}>
-    {Icon &&
-    <Icon size={18} className={active ? 'text-emerald-400' : 'text-slate-500' } />}
+// ─── Prompt Generator ─────────────────────────────────────────────────────────
+const generatePromptText = ({ goal, horizon, universe, signals, risk, exclusions }) => {
+  if (!goal && signals.length === 0 && exclusions.length === 0) return '';
+
+  const hasMarketCap = universe.marketCap && universe.marketCap !== 'Any Cap';
+  const hasSector    = universe.sector    && universe.sector    !== 'Any Sector';
+  let universePart =
+    hasMarketCap && hasSector ? `${universe.marketCap.toLowerCase()} ${universe.sector.toLowerCase()} stocks`
+    : hasMarketCap             ? `${universe.marketCap.toLowerCase()} stocks`
+    : hasSector                ? `${universe.sector.toLowerCase()} stocks`
+    : 'stocks';
+
+  let prompt = `Find ${universePart}`;
+  if (universe.priceRange && universe.priceRange !== 'Any Price')
+    prompt += ` priced ${universe.priceRange.toLowerCase()}`;
+
+  const goalMap = {
+    fast_moving: 'showing strong upward momentum',
+    breakout:    'setting up for a breakout',
+    long_term:   'with high-quality business fundamentals',
+    undervalued: 'that are undervalued relative to peers',
+    affordable:  'that are low-priced and budget-friendly',
+    sector:      'aligned with strong sector trends',
+    event:       'reacting to recent news or earnings catalysts',
+    active:      'with high trading volume and activity',
+    safer:       'with stable earnings and low volatility',
+  };
+  const goalPhrase = goal ? goalMap[goal] : '';
+  if (goalPhrase) prompt += ` ${goalPhrase}`;
+
+  const activeSignals = signals.slice(0, 3);
+  if (activeSignals.length > 0)
+    prompt += (goalPhrase ? ', specifically showing ' : ' showing ') + joinList(activeSignals);
+
+  const horizonMap = {
+    intraday:  'for an intraday setup.',
+    swing:     'for a swing trade.',
+    medium:    'for a medium-term position.',
+    long:      'for a long-term investment.',
+    exploring: 'for a diversified portfolio.',
+  };
+  prompt += ` ${horizonMap[horizon] || '.'}`;
+
+  const avoids  = exclusions.filter(e => e.startsWith('avoid')).map(e => e.replace('avoid ', ''));
+  const prefers = exclusions.filter(e => e.startsWith('prefer')).map(e => e.replace('prefer ', ''));
+  const parts   = [];
+  if (avoids.length)  parts.push(`Avoid ${joinList(avoids)}.`);
+  if (prefers.length) parts.push(`Prefer ${joinList(prefers)}.`);
+  if (risk === 'Safer')      parts.push('Prioritize capital protection.');
+  else if (risk === 'Aggressive') parts.push('Focus on high-growth potential.');
+  if (parts.length) prompt += ` ${parts.join(' ')}`;
+
+  return prompt.replace(/\s+/g, ' ').trim();
+};
+
+// ─── Shared UI Atoms ──────────────────────────────────────────────────────────
+const NeoCard = ({ children, bg = 'bg-white', className = '' }) => (
+  <div className={`${bg} border-[3px] border-black rounded-xl shadow-neo relative ${className}`}>
     {children}
+  </div>
+);
+
+const StepBadge = ({ n, bg = 'bg-[#FB923C]', rotate = '-rotate-[10deg]' }) => (
+  <div className={`absolute -top-4 -left-4 w-8 h-8 ${bg} rounded-full border-[3px] border-black flex items-center justify-center font-headline text-base font-extrabold z-10 ${rotate}`}>
+    {n}
+  </div>
+);
+
+const GoalChip = ({ goal, active, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`neo-chip flex items-center gap-1.5 px-4 py-2 border-[3px] border-black font-label text-xs tracking-wider font-bold
+      ${goal.dashed ? 'border-dashed rounded-lg bg-[#f3f3f3]' : 'rounded-full bg-white'}
+      ${active ? 'bg-[#FB923C] !shadow-none !translate-x-[2px] !translate-y-[2px]' : ''}`}
+  >
+    <Icon name={goal.icon} size={15} />
+    {goal.label}
   </button>
 );
 
-const Select = ({ value, onChange, options, label, pulse }) => (
-  <div className="flex flex-col gap-2 w-full">
-    {label && <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">{label}</label>}
+const SignalChip = ({ label, active, onClick, disabled }) => (
+  <button
+    onClick={onClick}
+    disabled={disabled}
+    className={`neo-chip px-3 py-1.5 border-[2px] border-black rounded-lg font-label text-[11px] tracking-wide font-bold
+      ${active   ? 'bg-[#FB923C] text-black !shadow-none !translate-x-[1px] !translate-y-[1px]' : ''}
+      ${disabled && !active ? 'bg-[#f3f3f3] text-[#aaa] border-[#ccc] cursor-not-allowed' : ''}
+      ${!active && !disabled ? 'bg-white text-black' : ''}`}
+  >
+    {label}
+  </button>
+);
+
+const NeoSelect = ({ value, onChange, options, label, pulse }) => (
+  <div className="flex flex-col gap-1.5 w-full">
+    {label && (
+      <label className="font-label text-[10px] uppercase tracking-widest text-[#4b4734] font-bold">{label}</label>
+    )}
     <div className="relative">
-      <select value={value} onChange={(e)=> onChange(e.target.value)}
-        className={`w-full bg-slate-900 border ${pulse ? 'border-emerald-500 ring-2 ring-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]' : 'border-slate-800 hover:border-slate-700'} rounded-xl px-4 py-3
-        text-sm font-medium text-slate-200 focus:outline-none focus:border-emerald-500 focus:ring-1
-        focus:ring-emerald-500 appearance-none cursor-pointer transition-all`}
-        >
+      <select
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        className={`w-full appearance-none bg-white border-[2px] rounded-lg px-4 py-2.5 font-label text-xs font-bold focus:outline-none cursor-pointer transition-all
+          ${pulse ? 'border-[#FB923C] shadow-[0_0_0_3px_rgba(251,146,60,0.2)]' : 'border-black focus:border-[#FB923C]'}`}
+      >
         {options.map(opt => {
           const val = typeof opt === 'object' ? opt.id : opt;
           const lbl = typeof opt === 'object' ? opt.label : opt;
           return <option key={val} value={val}>{lbl}</option>;
         })}
       </select>
-      <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-500">
-        <ChevronDown size={16} />
-      </div>
+      <Icon name="expand_more" size={20} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
     </div>
   </div>
 );
 
-const Toggle = ({ active, onClick, label, isDestructive }) => (
-  <button onClick={onClick} className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold
-    transition-colors border ${ active ? isDestructive ? 'bg-rose-500/20 border-rose-500/50 text-rose-400'
-    : 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400'
-    : 'bg-transparent border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200' }`}>
-    <div className={`w-2 h-2 rounded-full ${active ? (isDestructive ? 'bg-rose-400 shadow-[0_0_8px_rgba(244,63,94,0.8)]'
-      : 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]' ) : 'bg-slate-700' }`}></div>
-    {label}
-  </button>
-);
-
-const generatePromptText = (state) => {
-  const { goal, horizon, universe, signals, risk, exclusions } = state;
-  if (!goal && signals.length === 0 && exclusions.length === 0) return "";
-
-  // 1. Sector and Market Cap Combination
-  let universePart = "";
-  const hasMarketCap = universe.marketCap && universe.marketCap !== 'Any Cap';
-  const hasSector = universe.sector && universe.sector !== 'Any Sector';
-
-  if (hasMarketCap && hasSector) {
-    universePart = `${universe.marketCap.toLowerCase()} ${universe.sector.toLowerCase()} stocks`;
-  } else if (hasMarketCap) {
-    universePart = `${universe.marketCap.toLowerCase()} stocks`;
-  } else if (hasSector) {
-    universePart = `${universe.sector.toLowerCase()} stocks`;
-  } else {
-    universePart = "stocks";
-  }
-
-  let prompt = `Find ${universePart}`;
-
-  // 2. Price Range
-  if (universe.priceRange && universe.priceRange !== 'Any Price') {
-    prompt += ` priced ${universe.priceRange.toLowerCase()}`;
-  }
-
-  // 3. Goal Description
-  const goalContexts = {
-    'fast_moving': "showing strong upward momentum",
-    'breakout': "setting up for a breakout",
-    'long_term': "with high-quality business fundamentals",
-    'undervalued': "that are undervalued relative to peers",
-    'affordable': "that are low-priced and budget-friendly",
-    'sector': "aligned with strong sector trends",
-    'event': "reacting to recent news or earnings catalysts",
-    'active': "with high trading volume and activity",
-    'safer': "with stable earnings and low volatility"
-  };
-
-  const goalPhrase = goal ? goalContexts[goal] : "";
-  if (goalPhrase) {
-    prompt += ` ${goalPhrase}`;
-  }
-
-  // 4. Signals (Capped at 3 in generated text to maintain sentence naturalness)
-  const activeSignals = signals.slice(0, 3);
-  if (activeSignals.length > 0) {
-    const signalPhrase = joinList(activeSignals, 'and');
-    if (goalPhrase) {
-      prompt += `, specifically showing ${signalPhrase}`;
-    } else {
-      prompt += ` showing ${signalPhrase}`;
-    }
-  }
-
-  // 5. Horizon / Timeframe
-  const horizonTranslations = {
-    'intraday': "for an intraday setup.",
-    'swing': "for a swing trade.",
-    'medium': "for a medium-term position.",
-    'long': "for a long-term investment.",
-    'exploring': "for a diversified portfolio."
-  };
-  prompt += ` ${horizonTranslations[horizon] || "."}`;
-
-  // 6. Exclusions
-  const avoids = exclusions.filter(e => e.startsWith('avoid')).map(e => e.replace('avoid ', ''));
-  const prefers = exclusions.filter(e => e.startsWith('prefer')).map(e => e.replace('prefer ', ''));
-
-  let exclusionSentences = [];
-  if (avoids.length > 0) {
-    exclusionSentences.push(`Avoid ${joinList(avoids, 'and')}.`);
-  }
-  if (prefers.length > 0) {
-    exclusionSentences.push(`Prefer ${joinList(prefers, 'and')}.`);
-  }
-
-  // Risk profile integration
-  if (risk === 'Safer') {
-    exclusionSentences.push("Prioritize capital protection.");
-  } else if (risk === 'Aggressive') {
-    exclusionSentences.push("Focus on high-growth potential.");
-  }
-
-  if (exclusionSentences.length > 0) {
-    prompt += ` ${exclusionSentences.join(' ')}`;
-  }
-
-  return prompt.replace(/\s+/g, ' ').trim();
+// Library card accent colors
+const CARD_ACCENTS = {
+  orange:  'bg-[#FB923C]',
+  yellow:  'bg-[#fde047]',
+  lavender:'bg-[#DDD6FE]',
 };
 
+// ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
-  const [activeTab, setActiveTab] = useState('builder');
-  const [copied, setCopied] = useState(false);
-  const [toastMsg, setToastMsg] = useState("");
+  const [activeTab, setActiveTab]     = useState('builder');
+  const [toastMsg,  setToastMsg]      = useState('');
+  const [copied,    setCopied]        = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
-  const [confirmReset, setConfirmReset] = useState(false);
-
-  const [librarySearch, setLibrarySearch] = useState("");
-  const [activeTags, setActiveTags] = useState([]);
+  const [confirmReset,  setConfirmReset]  = useState(false);
+  const [librarySearch, setLibrarySearch] = useState('');
+  const [activeTags,    setActiveTags]    = useState([]);
   const [promptHistory, setPromptHistory] = useState([]);
 
   const defaultState = {
@@ -260,749 +240,478 @@ export default function App() {
     universe: { sector: 'Any Sector', marketCap: 'Any Cap', priceRange: 'Any Price' },
     signals: [],
     risk: 'Balanced',
-    exclusions: []
+    exclusions: [],
   };
-
   const [builderState, setBuilderState] = useState(defaultState);
-
   const currentPrompt = useMemo(() => generatePromptText(builderState), [builderState]);
 
-  const showToast = (msg) => {
-    setToastMsg(msg);
-    setTimeout(() => setToastMsg(""), 2500);
-  };
+  const showToast = msg => { setToastMsg(msg); setTimeout(() => setToastMsg(''), 2500); };
+  const updateState = (key, val) => { setHasInteracted(true); setBuilderState(p => ({ ...p, [key]: val })); };
 
-  const updateState = (key, value) => {
-    setHasInteracted(true);
-    setBuilderState(prev => ({ ...prev, [key]: value }));
-  };
-
-  const handleGoalSelect = (goalId) => {
+  const handleGoalSelect = goalId => {
     setHasInteracted(true);
     setBuilderState(prev => {
       const isDeselect = prev.goal === goalId;
-      const nextGoal = isDeselect ? "" : goalId;
-      let newState = { ...prev, goal: nextGoal };
-
-      // Apply Smart Defaults ONLY on fresh selection (i.e. if user hasn't selected signals yet)
+      let s = { ...prev, goal: isDeselect ? '' : goalId };
       if (!isDeselect && prev.signals.length === 0) {
-        if (goalId === 'affordable') newState.universe.priceRange = 'Under ₹500';
-        if (goalId === 'fast_moving') {
-          newState.horizon = 'swing';
-          newState.signals = ['strong recent price performance', 'sustained momentum'];
-        }
-        if (goalId === 'breakout') {
-          newState.horizon = 'swing';
-          newState.signals = ['breakout potential', 'high trading volume'];
-        }
-        if (goalId === 'long_term') {
-          newState.horizon = 'long';
-          newState.signals = ['strong profit growth', 'high ROE / ROCE', 'low debt'];
-        }
-        if (goalId === 'undervalued') {
-          newState.horizon = 'medium';
-          newState.signals = ['low PE relative to peers', 'undervalued with strong business quality'];
-        }
-        if (goalId === 'event') {
-          newState.horizon = 'swing';
-          newState.signals = ['stocks that react strongly to news', 'unusual activity'];
-        }
-        if (goalId === 'active') {
-          newState.horizon = 'intraday';
-          newState.signals = ['liquid stocks', 'high trader interest'];
-        }
-        if (goalId === 'safer') {
-          newState.horizon = 'long';
-          newState.signals = ['lower volatility', 'stable earnings'];
-          newState.risk = 'Safer';
-        }
+        if (goalId === 'affordable')  s.universe = { ...s.universe, priceRange: 'Under ₹500' };
+        if (goalId === 'fast_moving') { s.horizon = 'swing';    s.signals = ['strong recent price performance', 'sustained momentum']; }
+        if (goalId === 'breakout')    { s.horizon = 'swing';    s.signals = ['breakout potential', 'high trading volume']; }
+        if (goalId === 'long_term')   { s.horizon = 'long';     s.signals = ['strong profit growth', 'high ROE / ROCE', 'low debt']; }
+        if (goalId === 'undervalued') { s.horizon = 'medium';   s.signals = ['low PE relative to peers', 'undervalued with strong business quality']; }
+        if (goalId === 'event')       { s.horizon = 'swing';    s.signals = ['stocks that react strongly to news', 'unusual activity']; }
+        if (goalId === 'active')      { s.horizon = 'intraday'; s.signals = ['liquid stocks', 'high trader interest']; }
+        if (goalId === 'safer')       { s.horizon = 'long';     s.signals = ['lower volatility', 'stable earnings']; s.risk = 'Safer'; }
       }
-      return newState;
+      return s;
     });
   };
 
-  const toggleSignal = (signal) => {
+  const toggleSignal = signal => {
     setHasInteracted(true);
     setBuilderState(prev => {
-      const exists = prev.signals.includes(signal);
-      if (exists) return { ...prev, signals: prev.signals.filter(s => s !== signal) };
-      if (prev.signals.length >= 4) {
-        showToast("Signal limit reached (4 max).");
-        return prev;
-      }
+      if (prev.signals.includes(signal)) return { ...prev, signals: prev.signals.filter(s => s !== signal) };
+      if (prev.signals.length >= 4) { showToast('Signal limit reached (4 max).'); return prev; }
       return { ...prev, signals: [...prev.signals, signal] };
     });
   };
 
-  const toggleExclusion = (exclusion) => {
+  const toggleExclusion = ex => {
     setHasInteracted(true);
-    setBuilderState(prev => {
-      const exists = prev.exclusions.includes(exclusion);
-      return {
-        ...prev,
-        exclusions: exists ? prev.exclusions.filter(e => e !== exclusion) : [...prev.exclusions, exclusion]
-      };
-    });
-  };
-
-  const toggleSectorExclusion = (sector) => {
-    const ex = `avoid ${sector.toLowerCase()} stocks`;
-    toggleExclusion(ex);
-  };
-
-  const handleRefinement = (action) => {
-    setHasInteracted(true);
-    setBuilderState(prev => {
-      let newState = { ...prev };
-      switch(action) {
-        case 'tighten':
-          if(!newState.exclusions.includes('prefer profitable companies')) {
-            newState.exclusions = [...newState.exclusions, 'prefer profitable companies'];
-          }
-          if (newState.universe.marketCap === 'Any Cap') {
-            newState.universe = { ...newState.universe, marketCap: 'Large Cap' };
-          }
-          break;
-        case 'broaden':
-          newState.universe = { sector: 'Any Sector', marketCap: 'Any Cap', priceRange: newState.universe.priceRange };
-          newState.exclusions = [];
-          break;
-        case 'momentum':
-          if(!newState.signals.includes('strong recent price performance') && newState.signals.length < 4) {
-            newState.signals = [...newState.signals, 'strong recent price performance'];
-          }
-          newState.horizon = 'swing';
-          break;
-        case 'quality':
-          if(!newState.signals.includes('strong profit growth') && newState.signals.length < 4) {
-            newState.signals = [...newState.signals, 'strong profit growth'];
-          }
-          if(!newState.signals.includes('low debt') && newState.signals.length < 4) {
-            newState.signals = [...newState.signals, 'low debt'];
-          }
-          break;
-        case 'safer':
-          newState.risk = 'Safer';
-          if(!newState.signals.includes('lower volatility') && newState.signals.length < 4) {
-            newState.signals = [...newState.signals, 'lower volatility'];
-          }
-          if(!newState.exclusions.includes('avoid highly volatile stocks')) {
-            newState.exclusions = [...newState.exclusions, 'avoid highly volatile stocks'];
-          }
-          break;
-        case 'simplify':
-          newState.signals = newState.signals.slice(0, 2);
-          newState.exclusions = [];
-          break;
-        default:
-          break;
-      }
-      return newState;
-    });
-    showToast(`Applied: ${action.charAt(0).toUpperCase() + action.slice(1)}`);
+    setBuilderState(prev => ({
+      ...prev,
+      exclusions: prev.exclusions.includes(ex) ? prev.exclusions.filter(e => e !== ex) : [...prev.exclusions, ex],
+    }));
   };
 
   const handleSurpriseMe = () => {
-    const randomGoal = GOALS[Math.floor(Math.random() * GOALS.length)].id;
-    const randomHorizon = HORIZONS[Math.floor(Math.random() * HORIZONS.length)].id;
-
-    // Pick 2 random signals from SUGGESTED families based on randomGoal
-    const relevantFamilies = SIGNAL_FAMILIES.filter(family => 
-      (randomGoal === 'fast_moving' && family.id === 'momentum') ||
-      (randomGoal === 'breakout' && (family.id === 'technical' || family.id === 'momentum')) ||
-      (randomGoal === 'long_term' && family.id === 'fundamental') ||
-      (randomGoal === 'undervalued' && family.id === 'valuation') ||
-      (randomGoal === 'event' && family.id === 'event') ||
-      (randomGoal === 'active' && family.id === 'volume') ||
-      (randomGoal === 'safer' && family.id === 'safety')
+    const g = GOALS.filter(x => x.id !== 'custom')[Math.floor(Math.random() * (GOALS.length - 1))];
+    const h = HORIZONS[Math.floor(Math.random() * HORIZONS.length)].id;
+    const relevant = SIGNAL_FAMILIES.filter(f =>
+      (g.id === 'fast_moving' && f.id === 'momentum')  ||
+      (g.id === 'breakout'    && (f.id === 'technical' || f.id === 'momentum')) ||
+      (g.id === 'long_term'   && f.id === 'fundamental') ||
+      (g.id === 'undervalued' && f.id === 'valuation')  ||
+      (g.id === 'event'       && f.id === 'event')      ||
+      (g.id === 'active'      && f.id === 'volume')     ||
+      (g.id === 'safer'       && f.id === 'safety')
     );
-
-    const familiesToUse = relevantFamilies.length > 0 ? relevantFamilies : SIGNAL_FAMILIES.slice(0, 2);
-    const randomSignals = [];
-    familiesToUse.forEach(f => {
-      const opt = f.options[Math.floor(Math.random() * f.options.length)];
-      if (opt && !randomSignals.includes(opt)) randomSignals.push(opt);
-    });
-
+    const families = relevant.length > 0 ? relevant : SIGNAL_FAMILIES.slice(0, 2);
+    const sigs = [];
+    families.forEach(f => { const opt = f.options[Math.floor(Math.random() * f.options.length)]; if (opt && !sigs.includes(opt)) sigs.push(opt); });
     setHasInteracted(true);
-    setBuilderState({
-      ...defaultState,
-      goal: randomGoal,
-      horizon: randomHorizon,
-      signals: randomSignals,
-    });
-    showToast("Generated a random setup!");
+    setBuilderState({ ...defaultState, goal: g.id, horizon: h, signals: sigs });
+    showToast('Random setup generated!');
   };
 
-  const saveToHistory = (prompt) => {
-    setPromptHistory(prev => {
-      const newHist = [prompt, ...prev.filter(p => p !== prompt)].slice(0, 5);
-      return newHist;
-    });
-  };
+  const saveHistory = p => setPromptHistory(prev => [p, ...prev.filter(x => x !== p)].slice(0, 5));
 
   const handleCopy = () => {
     if (!currentPrompt) return;
     navigator.clipboard.writeText(currentPrompt);
-    setCopied(true);
-    saveToHistory(currentPrompt);
-    showToast("Prompt copied to clipboard!");
+    setCopied(true); saveHistory(currentPrompt);
+    showToast('Copied to clipboard!');
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleOpenTrackk = () => {
     if (!currentPrompt) return;
     navigator.clipboard.writeText(currentPrompt);
-    saveToHistory(currentPrompt);
+    saveHistory(currentPrompt);
     window.open('https://trackk.in/', '_blank');
-    showToast("Prompt copied! Opening Trackk Nest...");
+    showToast('Prompt copied! Opening Trackk Nest...');
   };
 
   const resetBuilder = () => {
-    if (!confirmReset) {
-      setConfirmReset(true);
-      setTimeout(() => setConfirmReset(false), 3000);
-      return;
-    }
-    setBuilderState(defaultState);
-    setHasInteracted(false);
-    setConfirmReset(false);
-    showToast("Builder reset");
+    if (!confirmReset) { setConfirmReset(true); setTimeout(() => setConfirmReset(false), 3000); return; }
+    setBuilderState(defaultState); setHasInteracted(false); setConfirmReset(false);
+    showToast('Builder reset');
   };
 
-  const toggleLibraryTag = (tag) => {
-    setActiveTags(prev =>
-      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
-    );
-  };
+  const isHighlighted = id =>
+    (builderState.goal === 'fast_moving' && id === 'momentum') ||
+    (builderState.goal === 'breakout'    && (id === 'technical' || id === 'momentum')) ||
+    (builderState.goal === 'long_term'   && id === 'fundamental') ||
+    (builderState.goal === 'undervalued' && id === 'valuation') ||
+    (builderState.goal === 'event'       && id === 'event') ||
+    (builderState.goal === 'active'      && id === 'volume') ||
+    (builderState.goal === 'safer'       && id === 'safety');
 
-  const getCalibration = () => {
-    if (!hasInteracted) return null;
-    const score = (builderState.goal ? 1 : 0) +
-      (builderState.signals.length * 2) +
-      (builderState.exclusions.length > 0 ? 1 : 0) +
-      (builderState.universe.marketCap !== 'Any Cap' ? 2 : 0) +
-      (builderState.universe.sector !== 'Any Sector' ? 2 : 0);
+  const allTags        = [...new Set(PROMPT_LIBRARY.flatMap(p => p.tags))];
+  const filteredLibrary = PROMPT_LIBRARY.filter(p => {
+    const matchSearch = !librarySearch || p.title.toLowerCase().includes(librarySearch.toLowerCase()) || p.prompt.toLowerCase().includes(librarySearch.toLowerCase());
+    const matchTags   = activeTags.length === 0 || activeTags.some(t => p.tags.includes(t));
+    return matchSearch && matchTags;
+  });
 
-    if (score < 4) return { label: "Broad search (Expect many results)", color: "text-blue-400", icon: Search };
-    if (score <= 8) return { label: "Balanced setup (Optimal)", color: "text-emerald-400", icon: Check };
-    return { label: "Narrow search (Fewer, high-conviction results)", color: "text-amber-400", icon: Gauge };
-  };
+  // ── Prompt panel content (reused in desktop sidebar + mobile drawer) ─────────
+  const PromptPanel = ({ mobile = false }) => (
+    <div className={mobile ? 'p-4' : 'p-6 flex flex-col flex-1'}>
+      {/* Header */}
+      <div className={`flex items-center gap-2 ${mobile ? 'mb-3' : 'mb-4 pb-3 border-b-2 border-[#4b4734]'}`}>
+        <Icon name="terminal" size={18} className="text-[#FB923C]" />
+        <span className="font-label text-[11px] tracking-widest uppercase text-[#FB923C] font-bold">Generated Prompt</span>
+      </div>
 
-  const calibration = getCalibration();
+      {/* Prompt text box */}
+      <div className={`bg-[#1c1c1c] border-[2px] border-[#4b4734] rounded-lg p-4 flex items-start ${mobile ? 'min-h-[72px] mb-3' : 'flex-1 min-h-[180px] mb-4'}`}>
+        <p className={`font-label text-sm leading-relaxed w-full ${hasInteracted && currentPrompt ? 'text-[#dadada]' : 'text-[#4b4734] italic text-center mt-auto mb-auto'}`}>
+          {hasInteracted && currentPrompt
+            ? currentPrompt
+            : "Select a discovery goal or tap 'Surprise Me' to start building your prompt..."}
+        </p>
+      </div>
 
-  const getMicroTip = () => {
-    const s = builderState.signals;
-    if (s.includes('RSI oversold') && s.includes('strong profit growth')) {
-      return "Contrarian Tip: Combining oversold indicators with strong fundamentals is a classic value-buying strategy.";
-    }
-    if (s.includes('breakout potential') && s.includes('high trading volume')) {
-      return "Pro Tip: Volume confirms price. A breakout with high volume is much stronger than one without.";
-    }
-    if (builderState.goal === 'affordable' && builderState.universe.marketCap === 'Small Cap') {
-      return "Watch Out: Small-cap affordable stocks can be volatile. Consider adding 'avoid loss-making companies'.";
-    }
-    return null;
-  };
-
-  const microTip = getMicroTip();
-
-  const renderOutputBlock = (isMobile = false) => (
-    <div className={`${isMobile ? 'flex flex-col gap-2.5 p-3' : 'p-7' }`}>
-        {!isMobile && (
-        <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold tracking-widest uppercase">
-                <Wand2 size={16} />
-                Generated Prompt
-            </div>
-            {calibration && (
-            <div className={`flex items-center gap-1.5 text-xs font-semibold ${calibration.color}`}>
-                <calibration.icon size={14} />
-                {calibration.label}
-            </div>
-            )}
-        </div>
-        )}
-
-        <div className={`bg-[#0B0E14] border border-slate-800 rounded-2xl ${isMobile ? 'px-3.5 py-2.5 min-h-0'
-            : 'p-6 min-h-[160px]' } flex items-center relative group shadow-inner transition-all`}>
-            <p className={`text-slate-100 ${isMobile ? 'text-sm' : 'text-lg' } leading-relaxed font-medium
-                ${!hasInteracted ? 'text-slate-500 italic' : '' }`}>
-                {hasInteracted ? currentPrompt : "Select a discovery goal or tap 'Surprise Me' to start building your prompt..."}
-            </p>
-            {hasInteracted && !isMobile && (
+      {/* CTAs */}
+      {hasInteracted && currentPrompt && (
+        <div className={`flex gap-2 ${mobile ? '' : 'flex-col'}`}>
+          {!mobile && (
             <button onClick={handleCopy}
-                className="absolute top-4 right-4 p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 text-xs font-bold border border-slate-700">
-                <Copy size={14} /> Copy
+              className="neo-btn w-full py-2.5 bg-white border-[3px] border-black rounded-lg font-label text-xs font-bold shadow-neo-sm flex items-center justify-center gap-2 text-black">
+              <Icon name={copied ? 'check' : 'content_copy'} size={16} />
+              {copied ? 'Copied!' : 'Copy Prompt'}
             </button>
-            )}
+          )}
+          <button onClick={handleOpenTrackk}
+            className={`neo-btn ${mobile ? 'flex-1' : 'w-full'} py-2.5 bg-[#FB923C] border-[3px] border-black rounded-lg font-label text-xs font-bold shadow-neo flex items-center justify-center gap-2 text-black`}>
+            <Icon name="open_in_new" size={16} />
+            {mobile ? 'Open Trackk Nest' : 'Copy & Open Trackk Nest'}
+          </button>
+          {mobile && (
+            <button onClick={handleCopy}
+              className="neo-btn py-2.5 px-3 bg-white border-[3px] border-black rounded-lg font-label text-xs font-bold shadow-neo-sm flex items-center justify-center text-black">
+              <Icon name={copied ? 'check' : 'content_copy'} size={16} />
+            </button>
+          )}
         </div>
+      )}
 
-        {hasInteracted && (
-        <div className={`mt-${isMobile ? '0' : '6' } flex ${isMobile ? 'flex-row' : 'flex-col' } gap-3`}>
-            <button onClick={handleCopy} className={`flex-1 ${isMobile ? 'py-2.5 text-xs' : 'py-3.5 text-sm'} bg-slate-800 hover:bg-slate-700 text-slate-200
-                font-bold rounded-xl transition-colors border border-slate-700 flex items-center justify-center
-                gap-2`}>
-                <Copy size={16} />
-                {!isMobile && "Copy"}
+      {/* Reset + history (desktop only) */}
+      {!mobile && (
+        <>
+          {hasInteracted && (
+            <button onClick={resetBuilder}
+              className={`mt-3 w-full py-2 font-label text-xs font-bold rounded-lg border-[2px] flex items-center justify-center gap-1.5 transition-all
+                ${confirmReset ? 'bg-red-50 border-[#ba1a1a] text-[#ba1a1a]' : 'bg-transparent border-black text-[#4b4734] hover:text-black hover:border-black'}`}>
+              <Icon name="refresh" size={14} />
+              {confirmReset ? 'Click again to confirm' : 'Reset Builder'}
             </button>
-            <button onClick={handleOpenTrackk} className={`flex-[3] ${isMobile ? 'py-2.5 text-xs' : 'py-3.5 text-sm'} bg-white hover:bg-slate-200
-                text-slate-950 font-bold rounded-xl transition-colors shadow-[0_0_20px_rgba(255,255,255,0.1)] flex
-                items-center justify-center gap-2`}>
-                <Send size={16} />
-                Copy & Open Trackk Nest
-            </button>
-        </div>
-        )}
-
-        {!isMobile && hasInteracted && (
-        <div className="mt-4 flex flex-col items-center gap-3">
-            <button onClick={resetBuilder} className={`py-2 px-4 text-xs font-bold rounded-lg transition-all flex
-                items-center gap-2 ${confirmReset ? 'bg-rose-500/20 text-rose-400 border border-rose-500/50'
-                : 'bg-transparent text-slate-500 hover:text-slate-300' }`}>
-                <RotateCcw size={14} />
-                {confirmReset ? "Click again to confirm reset" : "Reset Builder"}
-            </button>
-
-            {promptHistory.length > 0 && (
-            <div className="w-full mt-2 pt-4 border-t border-slate-800/50 flex flex-wrap gap-2 justify-center">
-                <span className="text-[10px] uppercase font-bold text-slate-600 w-full text-center mb-1">Recent Prompts</span>
-                {promptHistory.map((hist, i) => (
-                <button key={i} onClick={()=> { navigator.clipboard.writeText(hist); showToast("History copied!");
-                    }} className="max-w-[200px] truncate text-xs bg-slate-800/50 hover:bg-slate-700 text-slate-400
-                    py-1.5 px-3 rounded border border-slate-700/50">
-                    {hist}
-                </button>
+          )}
+          {promptHistory.length > 0 && (
+            <div className="mt-4 pt-4 border-t-[2px] border-[#4b4734]">
+              <span className="font-label text-[10px] uppercase tracking-widest text-[#4b4734] block mb-2">Recent Prompts</span>
+              <div className="flex flex-col gap-1.5">
+                {promptHistory.map((h, i) => (
+                  <button key={i} onClick={() => { navigator.clipboard.writeText(h); showToast('History copied!'); }}
+                    className="text-left text-[11px] font-label text-[#aaa] bg-[#1a1a1a] border border-[#4b4734] rounded px-2 py-1 truncate hover:bg-[#252525]">
+                    {h}
+                  </button>
                 ))}
+              </div>
             </div>
-            )}
-        </div>
-        )}
+          )}
+        </>
+      )}
     </div>
   );
 
+  // ── Main render ──────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen flex flex-col bg-[#0B0E14] text-slate-200 font-sans selection:bg-emerald-500/30">
-        {/* Toast Notification */}
-        <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-[60] bg-emerald-500 text-emerald-950 px-5 py-2.5
-            rounded-full font-bold text-sm shadow-lg shadow-emerald-500/20 transition-all duration-300 flex
-            items-center gap-2 ${toastMsg ? 'opacity-100 translate-y-0'
-            : 'opacity-0 -translate-y-4 pointer-events-none' }`}>
-            <Check size={16} strokeWidth={3} />
-            {toastMsg}
+    <div className="min-h-screen font-body text-black">
+
+      {/* ── Toast ── */}
+      <div className={`fixed top-5 left-1/2 -translate-x-1/2 z-[60] bg-[#FB923C] text-black px-5 py-2.5 border-[3px] border-black shadow-neo font-label text-xs font-bold flex items-center gap-2 rounded-lg transition-all duration-300
+        ${toastMsg ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'}`}>
+        <Icon name="check" size={16} />
+        {toastMsg}
+      </div>
+
+      {/* ── Nav ── */}
+      <nav className="sticky top-0 z-50 bg-[#FEFCE8] border-b-4 border-black shadow-[4px_4px_0px_0px_#000] flex justify-between items-center px-5 md:px-10 h-[72px]">
+        {/* Left: Logo */}
+        <div className="flex items-center gap-3">
+          <button className="md:hidden text-black p-1 hover:text-[#FB923C] transition-colors">
+            <Icon name="menu" size={26} />
+          </button>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-[#fde047] border-[3px] border-black flex items-center justify-center flex-shrink-0">
+              <Icon name="auto_awesome" size={16} className="text-black" />
+            </div>
+            <h1 className="font-headline text-2xl font-extrabold italic uppercase tracking-tighter text-black hidden sm:block">
+              TRACKK
+            </h1>
+            <span className="font-headline text-sm font-bold text-[#4b4734] hidden md:block mt-0.5">
+              Nest Prompt Builder
+            </span>
+          </div>
         </div>
 
-        {/* App Header */}
-        <header className="border-b border-slate-800/80 bg-[#0B0E14]/80 backdrop-blur-xl sticky top-0 z-40">
-            <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div
-                        className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                        <Sparkles className="text-emerald-950" size={18} strokeWidth={2.5} />
-                    </div>
-                    <h1 className="font-bold text-lg md:text-xl tracking-tight text-white hidden sm:block">
-                        Trackk Nest <span className="text-slate-500 font-medium">Prompt Builder</span>
-                    </h1>
-                    <h1 className="font-bold text-lg tracking-tight text-white sm:hidden">
-                        Prompt Builder
-                    </h1>
+        {/* Right: Actions */}
+        <div className="flex items-center gap-3">
+          <button onClick={handleSurpriseMe}
+            className="neo-chip hidden md:flex items-center gap-1.5 bg-[#DDD6FE] border-[2px] border-black px-4 py-2 rounded-lg font-label text-xs font-bold">
+            <Icon name="magic_button" size={15} />
+            Surprise Me
+          </button>
+          {/* Tab switcher */}
+          <div className="flex border-[3px] border-black rounded-xl overflow-hidden">
+            <button onClick={() => setActiveTab('builder')}
+              className={`px-5 py-2 font-label text-xs font-bold transition-colors
+                ${activeTab === 'builder' ? 'bg-black text-white' : 'bg-white text-black hover:bg-[#f3f3f3]'}`}>
+              Builder
+            </button>
+            <button onClick={() => setActiveTab('library')}
+              className={`px-5 py-2 font-label text-xs font-bold border-l-[2px] border-black transition-colors
+                ${activeTab === 'library' ? 'bg-black text-white' : 'bg-white text-black hover:bg-[#f3f3f3]'}`}>
+              Library
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* ── Main ── */}
+      <main className={`max-w-[1600px] mx-auto px-5 md:px-10 py-8 ${hasInteracted ? 'pb-[200px] lg:pb-10' : 'pb-10'}`}>
+
+        {/* ══ Builder Tab ══ */}
+        {activeTab === 'builder' && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+            {/* ── Left: Form (8 cols) ── */}
+            <div className="lg:col-span-8 flex flex-col gap-8 relative">
+
+              {/* Decorative floating icons */}
+              <span className="material-symbols-outlined absolute -top-6 -left-6 text-[#FB923C] opacity-25 pointer-events-none select-none z-0" style={{ fontSize: '80px', transform: 'rotate(12deg)' }}>astrophotography_off</span>
+              <span className="material-symbols-outlined absolute top-52 -right-4 text-[#DDD6FE] opacity-35 pointer-events-none select-none z-0" style={{ fontSize: '64px', transform: 'rotate(-12deg)' }}>local_florist</span>
+
+              {/* 1 ── Discovery Goal */}
+              <NeoCard className="pt-8 pb-6 px-6">
+                <StepBadge n="1" bg="bg-[#FB923C]" rotate="-rotate-[10deg]" />
+                <h2 className="font-headline text-2xl font-bold mb-1">What are you trying to find?</h2>
+                <p className="font-body text-sm text-[#4b4734] mb-4">Select a primary discovery goal.</p>
+                <div className="flex flex-wrap gap-2.5">
+                  {GOALS.map(g => (
+                    <GoalChip key={g.id} goal={g} active={builderState.goal === g.id} onClick={() => handleGoalSelect(g.id)} />
+                  ))}
+                </div>
+              </NeoCard>
+
+              {/* 2 + 3 ── Timeframe & Risk */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <NeoCard bg="bg-[#fde047]" className="pt-8 pb-6 px-6">
+                  <StepBadge n="2" bg="bg-white" rotate="rotate-[5deg]" />
+                  <h3 className="font-headline text-xl font-bold mb-4">Timeframe</h3>
+                  <NeoSelect value={builderState.horizon} onChange={val => updateState('horizon', val)} options={HORIZONS} />
+                </NeoCard>
+                <NeoCard bg="bg-[#DDD6FE]" className="pt-8 pb-6 px-6">
+                  <StepBadge n="3" bg="bg-white" rotate="-rotate-[5deg]" />
+                  <h3 className="font-headline text-xl font-bold mb-4">Risk Preference</h3>
+                  <div className="flex border-[3px] border-black rounded-xl overflow-hidden">
+                    {RISKS.map((r, i) => (
+                      <button key={r} onClick={() => updateState('risk', r)}
+                        className={`flex-1 py-2.5 font-label text-xs font-bold transition-colors
+                          ${i < RISKS.length - 1 ? 'border-r-[2px] border-black' : ''}
+                          ${builderState.risk === r ? 'bg-black text-white' : 'bg-white text-black hover:bg-[#f3f3f3]'}`}>
+                        {r}
+                      </button>
+                    ))}
+                  </div>
+                </NeoCard>
+              </div>
+
+              {/* 4 ── Filter Universe */}
+              <NeoCard className="pt-8 pb-6 px-6">
+                <StepBadge n="4" bg="bg-[#FB923C]" rotate="rotate-[8deg]" />
+                <div className="flex items-baseline gap-2 mb-5">
+                  <h3 className="font-headline text-2xl font-bold">Filter Universe</h3>
+                  <span className="font-label text-[10px] uppercase tracking-widest text-[#4b4734] font-bold">(Optional)</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <NeoSelect label="MARKET CAP"  value={builderState.universe.marketCap}  onChange={val => setBuilderState(p => ({ ...p, universe: { ...p.universe, marketCap: val } }))}  options={UNIVERSES.marketCaps} />
+                  <NeoSelect label="SECTOR"       value={builderState.universe.sector}     onChange={val => setBuilderState(p => ({ ...p, universe: { ...p.universe, sector: val } }))}     options={UNIVERSES.sectors}    pulse={builderState.goal === 'sector' && builderState.universe.sector === 'Any Sector'} />
+                  <NeoSelect label="PRICE RANGE"  value={builderState.universe.priceRange} onChange={val => setBuilderState(p => ({ ...p, universe: { ...p.universe, priceRange: val } }))} options={UNIVERSES.priceRanges} pulse={builderState.goal === 'affordable' && builderState.universe.priceRange === 'Any Price'} />
+                </div>
+              </NeoCard>
+
+              {/* 5 ── Conditions & Signals */}
+              <NeoCard className="pt-8 pb-6 px-6">
+                <StepBadge n="5" bg="bg-[#DDD6FE]" rotate="-rotate-[15deg]" />
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <h3 className="font-headline text-2xl font-bold">Conditions & Signals</h3>
+                    <p className="font-body text-sm text-[#4b4734] mt-0.5">Select up to 4 specific conditions.</p>
+                  </div>
+                  <div className={`px-3 py-1 border-[2px] border-black rounded-full font-label text-xs font-bold flex-shrink-0 ml-4
+                    ${builderState.signals.length >= 4 ? 'bg-[#FB923C] text-black' : 'bg-black text-white'}`}>
+                    {builderState.signals.length} / 4 Selected
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                    <button onClick={handleSurpriseMe}
-                        className="hidden md:flex items-center gap-2 text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors">
-                        <Wand2 size={14} /> Surprise Me
-                    </button>
-                    <div className="flex p-1 bg-slate-900 rounded-lg border border-slate-800">
-                        <button onClick={()=> setActiveTab('builder')}
-                            className={`px-4 md:px-5 py-1.5 text-sm font-semibold rounded-md transition-all
-                            ${activeTab === 'builder' ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
-                            >
-                            Builder
-                        </button>
-                        <button onClick={()=> setActiveTab('library')}
-                            className={`px-4 md:px-5 py-1.5 text-sm font-semibold rounded-md transition-all
-                            ${activeTab === 'library' ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
-                            >
-                            Library
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        {/* Main Workspace */}
-        <main className={`flex-1 max-w-7xl w-full mx-auto p-4 md:p-8 animate-in fade-in duration-500 ${hasInteracted ? 'pb-60' : 'pb-12'} lg:pb-8`}>
-            {activeTab === 'builder' && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-
-                {/* Builder Controls */}
-                <div className="lg:col-span-7 flex flex-col gap-10">
-
-                    {/* 1. Goal Selector */}
-                    <section>
-                        <div className="mb-5 flex items-center justify-between">
-                            <div>
-                                <h2 className="text-xl font-bold text-white flex items-center gap-3">
-                                    <span
-                                        className="w-7 h-7 rounded-lg bg-slate-800 text-slate-400 flex items-center justify-center text-xs font-bold border border-slate-700/50">1</span>
-                                    What are you trying to find?
-                                </h2>
-                                <p className="text-slate-400 text-sm mt-1.5 ml-10">Select a primary discovery goal.</p>
-                            </div>
-                            <button onClick={handleSurpriseMe}
-                                className="md:hidden flex items-center gap-1.5 text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3 py-2 rounded-lg border border-emerald-500/20">
-                                <Wand2 size={14} /> Shuffle
-                            </button>
-                        </div>
-                        <div className="flex flex-wrap gap-2.5 ml-10">
-                            {GOALS.map(g => {
-                            const isActive = builderState.goal === g.id;
-                            return (
-                            <Badge key={g.id} icon={g.icon} active={isActive}
-                                onClick={()=> handleGoalSelect(g.id)}
-                                >
-                                {g.label}
-                            </Badge>
-                            )})}
-                        </div>
-                    </section>
-
-                    <hr className="border-slate-800/80 ml-10" />
-
-                    {/* 2. Horizon & Risk */}
-                    <section className="grid grid-cols-1 md:grid-cols-2 gap-8 ml-10">
-                        <div>
-                            <div className="mb-4">
-                                <h2 className="text-lg font-semibold text-white flex items-center gap-3">
-                                    <span
-                                        className="w-7 h-7 rounded-lg bg-slate-800 text-slate-400 flex items-center justify-center text-xs font-bold border border-slate-700/50 -ml-10">2</span>
-                                    Timeframe
-                                </h2>
-                            </div>
-                            <Select value={builderState.horizon} onChange={(val)=> updateState('horizon', val)}
-                                options={HORIZONS}
-                                />
-                        </div>
-                        <div>
-                            <div className="mb-4">
-                                <h2 className="text-lg font-semibold text-white flex items-center gap-3">
-                                    <span
-                                        className="w-7 h-7 rounded-lg bg-slate-800 text-slate-400 flex items-center justify-center text-xs font-bold border border-slate-700/50 -ml-10">3</span>
-                                    Risk Preference
-                                </h2>
-                            </div>
-                            <div className="flex bg-slate-900 rounded-xl p-1 border border-slate-800 h-[46px]">
-                                {RISKS.map(r => (
-                                  <button key={r} onClick={()=> updateState('risk', r)}
-                                      className={`flex-1 py-1 text-sm font-semibold rounded-lg transition-all
-                                      ${builderState.risk === r ? 'bg-slate-800 text-white shadow-sm' :
-                                      'text-slate-400 hover:text-slate-200'}`}
-                                      >
-                                      {r}
-                                  </button>
-                                ))}
-                            </div>
-                        </div>
-                    </section>
-
-                    <hr className="border-slate-800/80 ml-10" />
-
-                    {/* 3. Universe */}
-                    <section className="ml-10">
-                        <div className="mb-5">
-                            <h2 className="text-lg font-semibold text-white flex items-center gap-3">
-                                <span
-                                    className="w-7 h-7 rounded-lg bg-slate-800 text-slate-400 flex items-center justify-center text-xs font-bold border border-slate-700/50 -ml-10">4</span>
-                                Filter Universe <span
-                                    className="text-slate-500 font-normal text-sm">(Optional)</span>
-                            </h2>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                            <Select label="Market Cap" value={builderState.universe.marketCap} onChange={(val)=>
-                                setBuilderState(prev => ({...prev, universe: {...prev.universe, marketCap: val}}))}
-                                options={UNIVERSES.marketCaps}
-                                />
-                            <Select label="Sector" pulse={builderState.goal === 'sector' &&
-                                builderState.universe.sector==='Any Sector' }
-                                value={builderState.universe.sector} onChange={(val)=> setBuilderState(prev =>
-                                ({...prev, universe: {...prev.universe, sector: val}}))}
-                                options={UNIVERSES.sectors}
-                                />
-                            <Select label="Price Range" pulse={builderState.goal === 'affordable' &&
-                                builderState.universe.priceRange==='Any Price' }
-                                value={builderState.universe.priceRange} onChange={(val)=>
-                                setBuilderState(prev => ({...prev, universe: {...prev.universe, priceRange:
-                                val}}))}
-                                options={UNIVERSES.priceRanges}
-                                />
-                        </div>
-                    </section>
-
-                    <hr className="border-slate-800/80 ml-10" />
-
-                    {/* 4. Signals */}
-                    <section className="ml-10">
-                        <div className="mb-6 flex items-center justify-between">
-                            <div>
-                                <h2 className="text-lg font-semibold text-white flex items-center gap-3">
-                                    <span
-                                        className="w-7 h-7 rounded-lg bg-slate-800 text-slate-400 flex items-center justify-center text-xs font-bold border border-slate-700/50 -ml-10">5</span>
-                                    Conditions & Signals
-                                </h2>
-                                <p className="text-slate-400 text-sm mt-1.5">Select up to 4 specific conditions.</p>
-                            </div>
-                            <div className="flex flex-col items-end gap-1">
-                                <span className={`px-3 py-1 rounded-full text-xs font-bold border ${
-                                    builderState.signals.length >= 4
-                                    ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
-                                    : 'bg-slate-900 text-slate-300 border-slate-800'
-                                }`}>
-                                    {builderState.signals.length} / 4 Selected
-                                </span>
-                                {builderState.signals.length >= 4 && <span
-                                    className="text-[10px] font-bold text-amber-500">Deselect a signal to swap</span>}
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col gap-5">
-                            {SIGNAL_FAMILIES.map(family => {
-                            // Highlight based on current goal
-                            const isHighlighted = builderState.goal === 'fast_moving' && family.id === 'momentum' ||
-                              builderState.goal === 'breakout' && (family.id === 'technical' || family.id === 'momentum') ||
-                              builderState.goal === 'long_term' && family.id === 'fundamental' ||
-                              builderState.goal === 'undervalued' && family.id === 'valuation' ||
-                              builderState.goal === 'event' && family.id === 'event' ||
-                              builderState.goal === 'active' && family.id === 'volume' ||
-                              builderState.goal === 'safer' && family.id === 'safety';
-
-                            return (
-                            <div key={family.id} className={`bg-slate-900/40 border rounded-2xl p-5 transition-all
-                                relative ${isHighlighted
-                                ? 'border-emerald-500/60 border-2 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.1)] -translate-y-0.5 mt-2'
-                                : 'border-slate-800' }`}>
-                                {isHighlighted && <div
-                                    className="absolute -top-3 right-4 bg-emerald-500 text-emerald-950 text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded shadow-sm">
-                                    Suggested</div>}
-                                <div className="flex items-center gap-2 mb-4 text-sm font-bold text-slate-200">
-                                    <family.icon size={18} className={isHighlighted ? 'text-emerald-400'
-                                        : 'text-slate-400' } />
-                                    {family.title}
-                                </div>
-                                <div className="flex flex-wrap gap-2.5">
-                                    {family.options.map(opt => (
-                                    <button key={opt} onClick={()=> toggleSignal(opt)}
-                                        disabled={builderState.signals.length >= 4 &&
-                                        !builderState.signals.includes(opt)}
-                                        className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border text-left ${
-                                        builderState.signals.includes(opt)
-                                        ? 'bg-emerald-500 text-emerald-950 border-emerald-500 shadow-md shadow-emerald-500/20'
-                                        : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-600 disabled:opacity-50 disabled:cursor-not-allowed'
-                                        }`}
-                                        >
-                                        {opt}
-                                    </button>
-                                    ))}
-                                </div>
-                            </div>
-                            )})}
-                        </div>
-                    </section>
-
-                    {/* Exclusions inline */}
-                    <section className="ml-10 bg-slate-900/40 border border-slate-800 rounded-2xl p-5">
-                        <h3 className="text-sm font-bold mb-4 text-slate-300 flex items-center gap-2">
-                            <X size={16} className="text-rose-400" /> Quick Exclusions
-                        </h3>
-                        <div className="flex flex-wrap gap-3 mb-4">
-                            {EXCLUSIONS.map(ex => (
-                            <Toggle key={ex} label={ex} isDestructive={ex.startsWith('avoid')}
-                                active={builderState.exclusions.includes(ex)} onClick={()=> toggleExclusion(ex)}
-                                />
-                                ))}
-                        </div>
-                        {/* Dynamic Sector Exclusions */}
-                        <h4 className="text-xs font-bold text-slate-500 uppercase mb-2">Avoid Sector</h4>
-                        <div className="flex flex-wrap gap-2">
-                            {['Banking', 'Pharma', 'IT', 'Energy', 'PSU'].map(sec => {
-                            const exLabel = `avoid ${sec.toLowerCase()} stocks`;
-                            return (
-                            <button key={sec} onClick={()=> toggleSectorExclusion(sec)}
-                                className={`px-2.5 py-1 text-xs font-medium rounded border ${
-                                builderState.exclusions.includes(exLabel)
-                                ? 'bg-rose-500/10 text-rose-400 border-rose-500/30'
-                                : 'bg-slate-900 text-slate-400 border-slate-800 hover:border-slate-700'
-                                }`}
-                                >
-                                No {sec}
-                            </button>
-                            )})}
-                        </div>
-                    </section>
-                </div>
-
-                {/* Right Panel: Sticky Output (Desktop) */}
-                <div className="hidden lg:flex lg:col-span-5 lg:sticky lg:top-24 mt-8 lg:mt-0 flex-col gap-6">
-                    <div
-                        className="bg-gradient-to-b from-slate-900 to-[#0B0E14] border border-slate-800 rounded-3xl shadow-2xl overflow-hidden relative">
-                        <div
-                            className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-600">
-                        </div>
-                        {renderOutputBlock()}
-                    </div>
-
-                    {/* Refinement Actions Card */}
-                    {hasInteracted && (
-                    <div className="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 shadow-xl">
-                        <div className="flex justify-between items-start mb-4">
-                            <h3 className="text-sm font-bold text-slate-300 flex items-center gap-2">
-                                <Sparkles size={16} className="text-emerald-400" /> Smart Tweaks
-                            </h3>
-                        </div>
-                        <div className="flex flex-wrap gap-2.5">
-                            <button onClick={()=> handleRefinement('tighten')} className="px-3 py-1.5 bg-slate-800
-                                hover:bg-slate-700 text-slate-300 font-medium text-xs rounded-lg transition border
-                                border-slate-700">Tighten filters</button>
-                            <button onClick={()=> handleRefinement('broaden')} className="px-3 py-1.5 bg-slate-800
-                                hover:bg-slate-700 text-slate-300 font-medium text-xs rounded-lg transition border
-                                border-slate-700">Broaden search</button>
-                            <button onClick={()=> handleRefinement('momentum')} className="px-3 py-1.5 bg-slate-800
-                                hover:bg-slate-700 text-slate-300 font-medium text-xs rounded-lg transition border
-                                border-slate-700">Add momentum</button>
-                            <button onClick={()=> handleRefinement('quality')} className="px-3 py-1.5 bg-slate-800
-                                hover:bg-slate-700 text-slate-300 font-medium text-xs rounded-lg transition border
-                                border-slate-700">Add quality</button>
-                            <button onClick={()=> handleRefinement('safer')} className="px-3 py-1.5 bg-slate-800
-                                hover:bg-slate-700 text-slate-300 font-medium text-xs rounded-lg transition border
-                                border-slate-700">Safer setup</button>
-                            <button onClick={()=> handleRefinement('simplify')} className="px-3 py-1.5 bg-slate-800
-                                hover:bg-slate-700 text-slate-300 font-medium text-xs rounded-lg transition border
-                                border-slate-700">Simplify</button>
-                        </div>
-
-                        {microTip && (
-                        <div
-                            className="mt-5 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl flex gap-3 items-start animate-in fade-in">
-                            <Info size={16} className="text-blue-400 mt-0.5 shrink-0" />
-                            <p className="text-xs text-blue-200/80 leading-relaxed font-medium">{microTip}</p>
-                        </div>
-                        )}
-                    </div>
-                    )}
-                </div>
-            </div>
-            )}
-
-            {/* Library Tab */}
-            {activeTab === 'library' && (
-            <div className="pb-24">
-                <div className="text-center max-w-2xl mx-auto mb-10 mt-8">
-                    <h2 className="text-3xl font-extrabold text-white mb-4 tracking-tight">Prompt Library</h2>
-                    <p className="text-slate-400 text-lg">Browse curated, plain-language prompts. Click to copy and run them in Trackk Nest.</p>
-                </div>
-
-                {/* Search & Filter Bar */}
-                <div className="max-w-3xl mx-auto mb-12 space-y-4">
-                    <div className="relative">
-                        <Search className="absolute left-4 top-3.5 text-slate-500" size={20} />
-                        <input type="text" placeholder="Search prompts by keyword..." value={librarySearch}
-                            onChange={(e)=> setLibrarySearch(e.target.value)}
-                        className="w-full bg-slate-900 border border-slate-800 rounded-2xl py-3.5 pl-12 pr-4
-                        text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500
-                        focus:ring-1 focus:ring-emerald-500 transition-all"
-                        />
-                    </div>
-                    <div className="flex flex-wrap gap-2 justify-center">
-                        {Array.from(new Set(PROMPT_LIBRARY.flatMap(p => p.tags))).map(tag => (
-                        <button key={tag} onClick={()=> toggleLibraryTag(tag)}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
-                            activeTags.includes(tag)
-                            ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400'
-                            : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
-                            }`}
-                            >
-                            {tag}
-                        </button>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="flex flex-col gap-14">
-                    {Array.from(new Set(PROMPT_LIBRARY.map(p => p.category))).map(category => {
-                    const categoryPrompts = PROMPT_LIBRARY.filter(p =>
-                    p.category === category &&
-                    (librarySearch === "" || p.title.toLowerCase().includes(librarySearch.toLowerCase()) ||
-                    p.prompt.toLowerCase().includes(librarySearch.toLowerCase())) &&
-                    (activeTags.length === 0 || activeTags.some(t => p.tags.includes(t)))
-                    );
-
-                    if (categoryPrompts.length === 0) return null;
-
+                <div className="flex flex-col gap-4 mt-5">
+                  {/* Signal families */}
+                  {SIGNAL_FAMILIES.map(family => {
+                    const hi = isHighlighted(family.id);
                     return (
-                    <div key={category} className="animate-in fade-in">
-                        <div className="flex items-center gap-4 mb-8">
-                            <h3 className="text-xl font-bold text-slate-200">{category}</h3>
-                            <div className="h-px bg-slate-800 flex-1"></div>
+                      <div key={family.id}
+                        className={`border-[2px] border-black rounded-lg p-4 relative overflow-hidden transition-all
+                          ${hi ? 'border-[3px] shadow-neo bg-[#FFFEF0]' : 'bg-white'}`}>
+                        {hi && (
+                          <div className="absolute -top-px right-4 bg-[#FB923C] text-black text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 border-[2px] border-black font-label">
+                            Suggested
+                          </div>
+                        )}
+                        {/* Watermark */}
+                        <Icon name={family.icon} size={80} className="absolute right-[-8px] bottom-[-8px] opacity-[0.06] pointer-events-none" />
+                        <h4 className="font-body text-sm font-bold flex items-center gap-2 mb-3">
+                          <Icon name={family.icon} size={18} className={hi ? 'text-[#FB923C]' : 'text-black'} />
+                          {family.title}
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {family.options.map(opt => (
+                            <SignalChip key={opt} label={opt}
+                              active={builderState.signals.includes(opt)}
+                              onClick={() => toggleSignal(opt)}
+                              disabled={builderState.signals.length >= 4 && !builderState.signals.includes(opt)} />
+                          ))}
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {categoryPrompts.map((prompt, idx) => (
-                            <div key={idx}
-                                className="bg-slate-900 border border-slate-800 rounded-2xl p-6 hover:border-emerald-500/50 transition-colors group flex flex-col h-full shadow-lg">
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                    {prompt.tags.map(tag => (
-                                    <span key={tag}
-                                        className="px-2.5 py-1 bg-slate-800 text-slate-300 text-[10px] uppercase tracking-wider font-bold rounded-md cursor-pointer hover:bg-slate-700"
-                                        onClick={(e)=> { e.stopPropagation(); toggleLibraryTag(tag); }}>
-                                        {tag}
-                                    </span>
-                                    ))}
-                                </div>
-                                <h4 className="font-bold text-slate-100 mb-1 text-lg">{prompt.title}</h4>
-                                <p
-                                    className="text-emerald-400 text-xs font-semibold mb-4 leading-relaxed line-clamp-2">
-                                    {prompt.why}</p>
-                                <div className="bg-[#0B0E14] p-3 rounded-xl border border-slate-800/50 mb-6 flex-1">
-                                    <p className="text-slate-300 text-sm italic leading-relaxed">"{prompt.prompt}"
-                                    </p>
-                                </div>
-                                <div className="grid grid-cols-2 gap-3 mt-auto">
-                                    <button onClick={()=> { navigator.clipboard.writeText(prompt.prompt);
-                                        showToast("Prompt copied!"); }}
-                                        className="py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold
-                                        rounded-xl transition-colors flex items-center justify-center gap-2 text-sm
-                                        border border-slate-700"
-                                        >
-                                        <Copy size={14} /> Copy
-                                    </button>
-                                    <button onClick={()=> {
-                                        navigator.clipboard.writeText(prompt.prompt);
-                                        window.open('https://trackk.in/', '_blank');
-                                        showToast("Prompt copied! Opening Trackk Nest...");
-                                    }}
-                                        className="py-2.5 bg-emerald-500 hover:bg-emerald-400 text-emerald-950
-                                        font-bold rounded-xl transition-colors flex items-center justify-center
-                                        gap-1.5 text-xs md:text-sm px-1 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
-                                        >
-                                        <Send size={14} /> Copy & Open Trackk Nest
-                                    </button>
-                                </div>
-                            </div>
-                            ))}
-                        </div>
-                    </div>
-                    )})}
-                </div>
-            </div>
-            )}
-        </main>
+                      </div>
+                    );
+                  })}
 
-        {/* Mobile Sticky Output Bottom Drawer */}
-        {activeTab === 'builder' && hasInteracted && (
-        <div
-            className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] transition-all duration-300">
-            {renderOutputBlock(true)}
-        </div>
+                  {/* Quick Exclusions */}
+                  <div className="border-[2px] border-[#ba1a1a] rounded-lg p-4 relative overflow-hidden bg-[#ffdad6]">
+                    <Icon name="cancel" size={80} className="absolute right-[-8px] bottom-[-8px] opacity-[0.07] text-[#ba1a1a] pointer-events-none" />
+                    <h4 className="font-body text-sm font-bold flex items-center gap-2 mb-3 text-[#ba1a1a]">
+                      <Icon name="close" size={18} className="text-[#ba1a1a]" />
+                      Quick Exclusions
+                    </h4>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {EXCLUSIONS.filter(e => e.startsWith('avoid')).map(ex => (
+                        <button key={ex} onClick={() => toggleExclusion(ex)}
+                          className={`neo-chip flex items-center gap-1.5 px-3 py-1.5 border-[2px] border-black rounded-full font-label text-[11px] font-bold
+                            ${builderState.exclusions.includes(ex) ? 'bg-[#ba1a1a] text-white !shadow-none !translate-x-[1px] !translate-y-[1px]' : 'bg-white text-black'}`}>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#ba1a1a] flex-shrink-0" />
+                          {ex}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="font-label text-[10px] uppercase tracking-widest text-[#4b4734] mb-2 font-bold">Preferences</p>
+                    <div className="flex flex-wrap gap-2">
+                      {EXCLUSIONS.filter(e => e.startsWith('prefer')).map(ex => (
+                        <button key={ex} onClick={() => toggleExclusion(ex)}
+                          className={`neo-chip px-3 py-1.5 border-[2px] border-black rounded-full font-label text-[11px] font-bold
+                            ${builderState.exclusions.includes(ex) ? 'bg-black text-white !shadow-none !translate-x-[1px] !translate-y-[1px]' : 'bg-white text-black'}`}>
+                          {ex}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </NeoCard>
+            </div>
+
+            {/* ── Right: Sticky Prompt Panel (4 cols, desktop only) ── */}
+            <div className="hidden lg:flex lg:col-span-4 flex-col sticky top-[90px] gap-5">
+              {/* Terminal panel */}
+              <div className="bg-black border-[3px] border-black rounded-xl shadow-neo-orange min-h-[480px] flex flex-col relative overflow-hidden">
+                {/* CRT scanline */}
+                <div className="absolute inset-0 pointer-events-none opacity-[0.04]"
+                  style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, #fff 2px, #fff 3px)' }} />
+                <PromptPanel mobile={false} />
+              </div>
+              {/* Pro tip sticker */}
+              <div className="flex justify-end">
+                <div className="bg-[#ffe24c] px-4 py-2.5 border-[3px] border-black shadow-neo inline-block"
+                  style={{ transform: 'rotate(3deg)' }}>
+                  <p className="font-body text-sm font-bold flex items-center gap-1.5">
+                    <Icon name="lightbulb" size={16} />
+                    Pro tip: Mix signals!
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
+
+        {/* ══ Library Tab ══ */}
+        {activeTab === 'library' && (
+          <div>
+            <div className="mb-6">
+              <h2 className="font-headline text-3xl font-extrabold mb-1">Prompt Library</h2>
+              <p className="font-body text-[#4b4734]">Battle-tested prompts for Indian market discovery.</p>
+            </div>
+
+            {/* Search + Tag filters */}
+            <div className="flex flex-col sm:flex-row gap-3 mb-6">
+              <div className="relative flex-1 max-w-sm">
+                <Icon name="search" size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4b4734]" />
+                <input type="text" placeholder="Search prompts..." value={librarySearch}
+                  onChange={e => setLibrarySearch(e.target.value)}
+                  className="w-full bg-white border-[3px] border-black rounded-xl pl-10 pr-4 py-2.5 font-body text-sm focus:outline-none focus:border-[#FB923C]" />
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {allTags.map(tag => (
+                  <button key={tag} onClick={() => setActiveTags(p => p.includes(tag) ? p.filter(t => t !== tag) : [...p, tag])}
+                    className={`neo-chip px-3 py-2 border-[2px] border-black rounded-lg font-label text-xs font-bold
+                      ${activeTags.includes(tag) ? 'bg-black text-white' : 'bg-white text-black'}`}>
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Cards grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+              {filteredLibrary.map((item, i) => (
+                <div key={i} className="bg-white border-[3px] border-black rounded-xl shadow-neo overflow-hidden flex flex-col">
+                  {/* Coloured header */}
+                  <div className={`${CARD_ACCENTS[item.color] || 'bg-[#FB923C]'} border-b-[3px] border-black px-5 py-3`}>
+                    <span className="font-label text-[10px] uppercase tracking-widest text-black font-bold">{item.category}</span>
+                    <h3 className="font-headline text-lg font-bold text-black">{item.title}</h3>
+                  </div>
+                  <div className="p-5 flex flex-col flex-1">
+                    <p className="font-body text-sm text-black leading-relaxed mb-3">{item.prompt}</p>
+                    <p className="font-label text-[11px] text-[#4b4734] mb-4 flex items-start gap-1.5 leading-relaxed">
+                      <Icon name="lightbulb" size={13} className="mt-0.5 flex-shrink-0" />
+                      {item.why}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 mb-4">
+                      {item.tags.map(t => (
+                        <span key={t} className="px-2 py-0.5 border-[2px] border-black rounded font-label text-[10px] font-bold bg-[#FEFCE8]">{t}</span>
+                      ))}
+                    </div>
+                    <div className="flex gap-2 mt-auto">
+                      <button onClick={() => { navigator.clipboard.writeText(item.prompt); showToast('Prompt copied!'); }}
+                        className="neo-btn flex-1 py-2 bg-black text-white border-[2px] border-black rounded-lg font-label text-xs font-bold shadow-neo-sm flex items-center justify-center gap-1.5">
+                        <Icon name="content_copy" size={14} />
+                        Copy
+                      </button>
+                      <button onClick={() => { navigator.clipboard.writeText(item.prompt); window.open('https://trackk.in/', '_blank'); }}
+                        className={`neo-btn flex-[2] py-2 ${CARD_ACCENTS[item.color] || 'bg-[#FB923C]'} border-[2px] border-black rounded-lg font-label text-xs font-bold shadow-neo-sm flex items-center justify-center gap-1.5 text-black`}>
+                        <Icon name="open_in_new" size={14} />
+                        Use on Trackk Nest
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* ── Mobile: Fixed bottom prompt drawer ── */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-black border-t-4 border-[#FB923C]">
+        <div className="flex items-center gap-2 px-4 pt-3 pb-1">
+          <Icon name="terminal" size={16} className="text-[#FB923C]" />
+          <span className="font-label text-[11px] tracking-widest uppercase text-[#FB923C] font-bold">Generated Prompt</span>
+          <button onClick={handleSurpriseMe}
+            className="ml-auto flex items-center gap-1 bg-[#DDD6FE] border-[2px] border-black px-3 py-1 rounded-lg font-label text-[11px] font-bold text-black neo-chip">
+            <Icon name="magic_button" size={13} />
+            Surprise
+          </button>
+        </div>
+        <PromptPanel mobile={true} />
+      </div>
     </div>
   );
 }
